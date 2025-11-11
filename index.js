@@ -34,6 +34,25 @@ async function run(params) {
          
         const db = client.db('study_mate');
         const mateCollection = db.collection('mates');
+        const connectionCollection = db.collection('connection');
+        const usersCollection = db.collection('users');
+
+
+        app.post('/users', async (req, res) => {
+            const newUser = req.body;
+            const email = req.body.email;
+            const query = { email: email }
+            const existingUser = await usersCollection.findOne(query);
+            
+            if (existingUser) {
+                res.send({message: 'user already exits. do not need to insert again'})
+            }
+            else {
+                const result = await usersCollection.insertOne(newUser);
+                res.send(result);
+            }
+        })
+
 
 
         app.get('/mates', async (req, res) => {
@@ -81,6 +100,25 @@ async function run(params) {
             const id = req.params.id;
             const query = {_id: new ObjectId(id)};
             const result = await mateCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        // my connection related apis
+        app.get('/connection', async (req, res) => {
+            const email = req.query.email;
+            const query = {};
+            if (email) {
+                query.buyer_email = email;
+            }
+
+            const cursor = connectionCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post('/connection', async (req, res) => {
+            const newConnection = req.body
+            const result = await connectionCollection.insertOne(newConnection);
             res.send(result);
         })
         
