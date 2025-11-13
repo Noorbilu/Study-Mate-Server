@@ -108,44 +108,24 @@ async function run(params) {
       const result = await mateCollection.deleteOne(query);
       res.send(result);
     })
-
-    // my connection related apis
-
-    // app.get('/connection', async (req, res) => {
-    //   const email = req.query.email;
-    //   const query = {};
-    //   if (email) {
-    //     query.buyer_email = email;
-    //   }
-
-    //   const cursor = connectionCollection.find(query);
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // })
-
-    // app.post('/connection', async (req, res) => {
-    //   const newConnection = req.body
-    //   const result = await connectionCollection.insertOne(newConnection);
-    //   res.send(result);
-    // })
     const { ObjectId } = require('mongodb');
 
-    // Get connections for a user
+
     app.get('/connection', async (req, res) => {
-      if (email) query.requesterEmail = email;
+      const email = req.query.email;
       const query = {};
-      if (email) query.email = email; // make sure 'email' matches your DB field
+      if (email) query.requesterEmail = email;
 
       try {
-        const result = await connectionCollection.find(query).toArray();
-        res.send(result);
+        const connections = await connectionCollection.find(query).toArray();
+        res.send(connections);
       } catch (err) {
         console.error(err);
         res.status(500).send({ message: 'Failed to load connections' });
       }
     });
 
-    // Add a new connection request
+    // Add a new connection
     app.post('/connection', async (req, res) => {
       const newConnection = req.body;
       try {
@@ -153,18 +133,18 @@ async function run(params) {
         res.send(result);
       } catch (err) {
         console.error(err);
-        res.status(500).send({ message: 'Failed to create connection' });
+        res.status(500).send({ message: 'Failed to add connection' });
       }
     });
 
-    // Update connection message
+    // Update a connection
     app.patch('/connection/:id', async (req, res) => {
       const id = req.params.id;
-      const { message } = req.body;
+      const updatedData = req.body;
       try {
         const result = await connectionCollection.updateOne(
           { _id: new ObjectId(id) },
-          { $set: { message } }
+          { $set: updatedData }
         );
         res.send(result);
       } catch (err) {
