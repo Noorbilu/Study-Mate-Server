@@ -68,11 +68,7 @@ async function run(params) {
       res.send(result)
     });
 
-    app.get('/latest-mates', async (req, res) => {
-      const cursor = mateCollection.find().sort({ rating: -1 }).limit(3);
-      const result = await cursor.toArray();
-      res.send(result);
-    })
+
 
     app.get('/mates/:id', async (req, res) => {
       const id = req.params.id;
