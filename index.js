@@ -153,7 +153,17 @@ async function run(params) {
       }
     });
 
-
+    // Delete a connection
+    app.delete('/connection/:id', async (req, res) => {
+      const id = req.params.id;
+      try {
+        const result = await connectionCollection.deleteOne({ _id: new ObjectId(id) });
+        res.send(result);
+      } catch (err) {
+        console.error(err);
+        res.status(500).send({ message: 'Failed to delete connection' });
+      }
+    });
 
 
 
